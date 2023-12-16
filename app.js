@@ -1,34 +1,49 @@
-const item = document.querySelector("#item")
-const toDoBox = document.querySelector("#to-do-box")
+document.addEventListener('DOMContentLoaded', function () {
+    const taskForm = document.getElementById('taskForm');
+    const taskList = document.getElementById('taskList');
 
-item.addEventListener(
-    "keyup",
-    function(event) {
-        if (event.key == "Enter") {
-            addToDo(this.value)
-            this.value = ""
+    taskForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        addTask();
+    });
+
+    function addTask() {
+        const taskName = document.getElementById('taskName').value;
+        const dueDate = document.getElementById('dueDate').value;
+        const priority = document.getElementById('priority').value;
+
+        const taskElement = document.createElement('div');
+        taskElement.className = 'task';
+        taskElement.innerHTML = `
+            <span><strong>Task Name:</strong> ${taskName}</span>
+            <span><strong>Due Date:</strong> ${dueDate}</span>
+            <span><strong>Priority:</strong> ${priority}</span>
+            <button class="editBtn">Edit</button>
+            <button class="deleteBtn">Delete</button>
+        `;
+
+        taskList.appendChild(taskElement);
+        taskForm.reset();
+    }
+
+    taskList.addEventListener('click', function (e) {
+        if (e.target.classList.contains('deleteBtn')) {
+            deleteTask(e.target.parentElement);
+        } else if (e.target.classList.contains('editBtn')) {
+            editTask(e.target.parentElement);
+        }
+    });
+
+    function deleteTask(taskElement) {
+        taskElement.remove();
+    }
+
+    function editTask(taskElement) {
+        const taskNameSpan = taskElement.querySelector('span:first-child');
+        const newTaskName = prompt('Edit Task Name:', taskNameSpan.textContent.split(': ')[1]);
+
+        if (newTaskName !== null) {
+            taskNameSpan.innerHTML = `<strong>Task Name:</strong> ${newTaskName}`;
         }
     }
-)
-
-const addToDo = (item) => {
-    const listItem = document.createElement("li");
-    listItem.innerHTML = `
-         ${item}
-        <i class="fas fa-times"></i>
-    `;
-
-    listItem.addEventListener(
-        "click",
-        function() {
-            this.classList.toggle("done");
-        }
-    )
-    listItem.querySelector("i").addEventListener(
-        "click",
-        function() {
-            listItem.remove()
-        }
-    )
-    toDoBox.appendChild(listItem)
-}
+});
